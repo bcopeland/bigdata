@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="walker">
+
+<class name="Edge" table="forward_edges">
+  <composite-id>
+    <key-property name="source" column="source_id"/>
+    <key-property name="target" column="destination_id"/>
+  </composite-id>
+</class>
+
+<class name="WalkSegment" table="walk">
+  <composite-id>
+    <key-property name="walkid" column="walk_id"/>
+    <key-property name="ordinal"/>
+  </composite-id>
+  <component name="edge">
+    <property name="source" column="source_id"/>
+    <property name="target" column="destination_id"/>
+  </component>
+  <property name="category"/>
+</class>
+
+</hibernate-mapping>
+
+
