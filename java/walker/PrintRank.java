@@ -14,6 +14,6 @@ public class PrintRank
         /* print out the page rank */
         for (Map.Entry<Long, Float> e :
                 rw.computeRanks(category).entrySet())
-            System.out.println(e.getKey() + ": " + e.getValue());
+            System.out.println(e.getKey() + "\t" + e.getValue());
     }
 }
