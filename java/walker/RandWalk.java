@@ -90,7 +90,7 @@ public class RandWalk
         Random random = new Random(123);
         int R = 1000;
         float epsilon = 0.15f;
-        GraphDB db = new GraphDB();
+        GraphDB db = new HibernateGraphDB();
 
         RandWalk rw = new RandWalk(db);
 

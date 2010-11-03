@@ -7,7 +7,7 @@ public class PrintRank
     public static void main(String args[])
     {
         String category = args[0];
-        GraphDB db = new GraphDB();
+        GraphDB db = new HibernateGraphDB();
 
         RandWalk rw = new RandWalk(db);
 
