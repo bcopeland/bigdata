@@ -10,9 +10,9 @@ def rate_limit(remaining_hits, end_period)
     end
 
     now = Time.now.to_i
-    puts "remaining hits: #{remaining_hits}, endp: #{end_period}, now: #{now}"
+    # puts "remaining hits: #{remaining_hits}, endp: #{end_period}, now: #{now}"
     sleep_time = (end_period - now) / (remaining_hits + 1)
-    puts "sleeping: #{sleep_time}s"
+    # puts "sleeping: #{sleep_time}s"
     sleep(sleep_time)
 end
 
