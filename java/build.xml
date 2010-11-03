@@ -1,0 +1,23 @@
+<project name="bigdata" default="all" basedir=".">
+    <description>Build file for bigdata</description>
+    <property environment="env" />
+    <property name="classes.dir" value="classes"/>
+
+    <path id="build.compile.classpath">
+      <fileset dir="lib" includes="*.jar"/>
+    </path>
+
+    <target name="all">
+        <antcall target="compile"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}" />
+        <javac
+            srcdir="." 
+            destdir="${classes.dir}"
+            classpathref="build.compile.classpath" >
+            <compilerarg line="-Xlint:unchecked -Xlint:finally -Xlint:fallthrough" />
+        </javac>
+    </target>
+</project>
