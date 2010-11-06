@@ -8,6 +8,7 @@ public class RandWalk
 
     private Random generator;
     private GraphDB db;
+    private int total_degree;
 
     public RandWalk(GraphDB db)
     {
@@ -20,18 +21,20 @@ public class RandWalk
         long now = System.currentTimeMillis();
         Object tx = db.begin();
 
+        total_degree = 0;
         long walkid = db.generateWalkId();
-        doWalk(walkid, start, epsilon, category, 0);
+        int steps = doWalk(walkid, start, epsilon, category);
         long end = System.currentTimeMillis();
 
         db.commit(tx);
         System.out.println("walk " + start + " elapsed: " +
-            (end - now)); 
+            (end - now) + " " + steps + " steps " + " d:" + total_degree); 
     }
 
-    private void doWalk(long walkid, long start, float epsilon,
-                        String category, int step)
+    private int doWalk(long walkid, long start, float epsilon,
+                        String category)
     {
+        int step = 0;
         while (true)
         {
             float alpha = generator.nextFloat();
@@ -39,21 +42,34 @@ public class RandWalk
             if (alpha < epsilon)
                 break;
 
-            List<Long> neighbors = db.getNeighbors(start);
-            if (neighbors.isEmpty())
+            //Long nextNode = db.getRandomNeighbor(start);
+            Long nextNode = getRandomNeighbor(start);
+            if (nextNode == null)
                 break;
-
-            int index = generator.nextInt(neighbors.size());
-            long nextNode = neighbors.get(index);
 
             addSegment(walkid, start, nextNode, step);
             step++;
             start = nextNode;
         }
+        return step;
+    }
+
+    public Long getRandomNeighbor(long source)
+    {
+        List<Long> neighbors = db.getNeighbors(source);
+        if (neighbors.isEmpty())
+            return null;
+
+        total_degree += neighbors.size();
+        int index = generator.nextInt(neighbors.size());
+        return neighbors.get(index);
     }
 
     private void addSegment(long walkid, long start, long next, int step)
     {
+        if (start == next)
+            return;
+
         WalkSegment ws =
             new WalkSegment(walkid, new Edge(start,next), "global", step);
 
@@ -90,20 +106,22 @@ public class RandWalk
         Random random = new Random(123);
         int R = 1000;
         float epsilon = 0.15f;
-        GraphDB db = new HibernateGraphDB();
+
+        GraphDB db;
+
+        if (args.length > 0 && args[0].equals("neo4j"))
+            db = new Neo4JGraphDB();
+        else
+            db = new HibernateGraphDB();
 
         RandWalk rw = new RandWalk(db);
 
         /* FIXME do this in 4 threads */
 
-        Long[] ids = db.getNodeIds().toArray(new Long[0]);
-
         /* pick R random ids and run walks on all of them */
-        for (int i=0; i < R; i++)
-        {
-            long id = ids[random.nextInt(ids.length)];
+        List<Long> ids = db.getRandomNodeIds(R);
+        for (long id : ids)
             rw.doWalk(id, epsilon, RandWalk.GLOBAL_CATEGORY);
-        }
 
         /* print out the page rank */
         for (Map.Entry<Long, Float> e :

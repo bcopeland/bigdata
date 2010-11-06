@@ -25,8 +25,28 @@ public class HibernateGraphDB extends BaseDB
     {
         return CollectionUtils.cast(getCurrentSession()
             .createQuery("select source from Edge")
-            .setMaxResults(20000)
+            .setMaxResults(200000)
             .list());
+    }
+
+    public List<Long> getRandomNodeIds(int count)
+    {
+        return CollectionUtils.cast(getCurrentSession()
+            .createQuery("select source from Edge order by random()")
+            .setMaxResults(count)
+            .list());
+    }
+
+    public Long getRandomNeighbor(long source)
+    {
+        List<Long> list = CollectionUtils.cast(getCurrentSession()
+            .createQuery("select target from Edge where source=? " + 
+                         "order by random()")
+            .setLong(0, source)
+            .setMaxResults(1)
+            .list());
+
+        return CollectionUtils.first(list);
     }
 
     public List<Long> getNeighbors(long source)

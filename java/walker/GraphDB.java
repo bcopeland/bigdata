@@ -12,7 +12,9 @@ public interface GraphDB
     Object begin();
     void commit(Object handle);
     List<Long> getNodeIds();
-    List<Long> getNeighbors(long source);
+    public Long getRandomNeighbor(long source);
+    public List<Long> getRandomNodeIds(int count);
+    public List<Long> getNeighbors(long source);
     long generateWalkId();
     Map<Long,Float> getWalkCounts(String category);
     void saveSegment(WalkSegment ws);

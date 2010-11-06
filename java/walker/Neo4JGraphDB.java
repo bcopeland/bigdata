@@ -55,11 +55,36 @@ public class Neo4JGraphDB
     public List<Long> getNodeIds()
     {
         List<Long> l = new ArrayList<Long>();
-        for (Node n : graphDb.getAllNodes())
-            l.add((Long) n.getProperty(ID_KEY));
+        int count = 0;
+        for (Node n : graphDb.getAllNodes()) {
+            try {
+                l.add((Long) n.getProperty(ID_KEY));
+                if (count++ > 20000)
+                    break;
+            }
+            catch (Exception e) {}
+        }
 
         return l;
     }
+
+    public List<Long> getRandomNodeIds(int count)
+    {
+        List<Long> l = getNodeIds();
+        Collections.shuffle(l);
+        return l;
+    }
+
+    public Long getRandomNeighbor(long source)
+    {
+        List<Long> neighbors = getNeighbors(source);
+        if (neighbors.isEmpty())
+            return null;
+
+        int index = idgen.nextInt(neighbors.size());
+        return neighbors.get(index);
+    }
+
 
     public List<Long> getNeighbors(long source)
     {
