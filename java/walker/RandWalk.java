@@ -8,7 +8,6 @@ public class RandWalk
 
     private Random generator;
     private GraphDB db;
-    private int total_degree;
 
     public RandWalk(GraphDB db)
     {
@@ -21,14 +20,13 @@ public class RandWalk
         long now = System.currentTimeMillis();
         Object tx = db.begin();
 
-        total_degree = 0;
         long walkid = db.generateWalkId();
         int steps = doWalk(walkid, start, epsilon, category);
         long end = System.currentTimeMillis();
 
         db.commit(tx);
         System.out.println("walk " + start + " elapsed: " +
-            (end - now) + " " + steps + " steps " + " d:" + total_degree); 
+            (end - now) + " " + steps + " steps "); 
     }
 
     private int doWalk(long walkid, long start, float epsilon,
@@ -60,7 +58,6 @@ public class RandWalk
         if (neighbors.isEmpty())
             return null;
 
-        total_degree += neighbors.size();
         int index = generator.nextInt(neighbors.size());
         return neighbors.get(index);
     }
@@ -103,8 +100,8 @@ public class RandWalk
 
     public static void main(String args[])
     {
-        Random random = new Random(123);
-        int R = 1000;
+        int R = 200000;
+        int numthreads = 4;
         float epsilon = 0.15f;
 
         GraphDB db;
@@ -114,18 +111,25 @@ public class RandWalk
         else
             db = new HibernateGraphDB();
 
-        RandWalk rw = new RandWalk(db);
-
-        /* FIXME do this in 4 threads */
-
         /* pick R random ids and run walks on all of them */
         List<Long> ids = db.getRandomNodeIds(R);
-        for (long id : ids)
-            rw.doWalk(id, epsilon, RandWalk.GLOBAL_CATEGORY);
+        int listlen = (ids.size() + numthreads - 1) / numthreads;
+        for (int i=0; i < numthreads; i++)
+        {
+            int start = i * listlen;
+            int end = Math.min(start + listlen, ids.size());
 
-        /* print out the page rank */
-        for (Map.Entry<Long, Float> e :
-                rw.computeRanks(RandWalk.GLOBAL_CATEGORY).entrySet())
-            System.out.println(e.getKey() + ": " + e.getValue());
+            final GraphDB mydb = db;
+            final List<Long> sublist = ids.subList(start, end);
+            final float myepsilon = epsilon;
+            Thread th = new Thread(new Runnable() {
+                public void run() {
+                    RandWalk rw = new RandWalk(mydb);
+                    for (long id : sublist)
+                        rw.doWalk(id, myepsilon, RandWalk.GLOBAL_CATEGORY);
+                }});
+
+            th.start();
+        }
     }
 }
