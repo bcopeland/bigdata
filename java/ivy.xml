@@ -1,0 +1,8 @@
+<ivy-module version="2.0">
+    <info organisation="edu.jhu" module="twitter-rank"/>
+    <dependencies>
+        <dependency org="org.twitter4j" name="twitter4j-core" rev="2.1.6"/>
+        <dependency org="org.hibernate" name="hibernate-core" rev="3.6.0.Final"/>
+        <dependency org="org.neo4j" name="neo4j" rev="1.2.M03"/>
+    </dependencies>
+</ivy-module>
