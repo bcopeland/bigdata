@@ -32,7 +32,7 @@ public class HibernateGraphDB extends BaseDB
     public List<Long> getRandomNodeIds(int count)
     {
         return CollectionUtils.cast(getCurrentSession()
-            .createQuery("select source from Edge order by random()")
+            .createQuery("select source from Edge group by source order by random()")
             .setMaxResults(count)
             .list());
     }
