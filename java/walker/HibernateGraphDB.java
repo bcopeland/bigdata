@@ -82,6 +82,11 @@ public class HibernateGraphDB extends BaseDB
         return map;
     }
 
+    public void saveEdge(Edge e)
+    {
+        getCurrentSession().saveOrUpdate(e);
+    }
+
     public void saveSegment(WalkSegment ws)
     {
         getCurrentSession().save(ws);

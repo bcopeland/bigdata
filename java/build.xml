@@ -17,7 +17,9 @@
         <antcall target="compile"/>
     </target>
 
-    <target name="compile" depends="init-ivy,resolve">
+    <target name="deps" depends="init-ivy,resolve" />
+
+    <target name="compile">
         <mkdir dir="${classes.dir}" />
         <javac
             srcdir="." 

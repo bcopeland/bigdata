@@ -17,5 +17,6 @@ public interface GraphDB
     public List<Long> getNeighbors(long source);
     long generateWalkId();
     Map<Long,Float> getWalkCounts(String category);
+    void saveEdge(Edge e);
     void saveSegment(WalkSegment ws);
 }

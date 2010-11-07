@@ -50,4 +50,9 @@ public class Edge implements Serializable
     {
         return (int) (source ^ target);
     }
+
+    public String toString()
+    {
+        return source + " -> " + target;
+    }
 }

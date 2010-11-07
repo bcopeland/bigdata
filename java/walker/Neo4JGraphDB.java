@@ -133,6 +133,15 @@ public class Neo4JGraphDB
         return node;
     }
 
+    public void saveEdge(Edge e)
+    {
+        // get both nodes
+        Node n1 = getOrCreateNode(e.getSource());
+        Node n2 = getOrCreateNode(e.getTarget());
+
+        Relationship r1 = n1.createRelationshipTo(n2, MyRelationshipType.FOLLOWS);
+    }
+
     public void saveSegment(WalkSegment ws)
     {
         // get both nodes
