@@ -4,8 +4,6 @@ import java.util.*;
 
 public class RandWalk
 {
-    public static final String GLOBAL_CATEGORY = "global";
-
     private Random generator;
     private GraphDB db;
 
@@ -45,7 +43,7 @@ public class RandWalk
             if (nextNode == null)
                 break;
 
-            addSegment(walkid, start, nextNode, step);
+            addSegment(walkid, start, nextNode, category, step);
             step++;
             start = nextNode;
         }
@@ -62,13 +60,14 @@ public class RandWalk
         return neighbors.get(index);
     }
 
-    private void addSegment(long walkid, long start, long next, int step)
+    private void addSegment(long walkid, long start, long next,
+                            String category, int step)
     {
         if (start == next)
             return;
 
         WalkSegment ws =
-            new WalkSegment(walkid, new Edge(start,next), "global", step);
+            new WalkSegment(walkid, new Edge(start,next), category, step);
 
         db.saveSegment(ws);
     }
@@ -106,13 +105,19 @@ public class RandWalk
 
         GraphDB db;
 
-        if (args.length > 0 && args[0].equals("neo4j"))
+        int arg = 0;
+        if (args.length > 0 && args[0].equals("neo4j")) {
             db = new Neo4JGraphDB();
+            arg++;
+        }
         else
             db = new HibernateGraphDB();
 
+
+        String category = args[arg];
+
         /* pick R random ids and run walks on all of them */
-        List<Long> ids = db.getRandomNodeIds(R);
+        List<Long> ids = db.getRandomNodeIds(R, category);
         int listlen = (ids.size() + numthreads - 1) / numthreads;
         for (int i=0; i < numthreads; i++)
         {
@@ -122,11 +127,13 @@ public class RandWalk
             final GraphDB mydb = db;
             final List<Long> sublist = ids.subList(start, end);
             final float myepsilon = epsilon;
+            final String mycat = category;
+
             Thread th = new Thread(new Runnable() {
                 public void run() {
                     RandWalk rw = new RandWalk(mydb);
                     for (long id : sublist)
-                        rw.doWalk(id, myepsilon, RandWalk.GLOBAL_CATEGORY);
+                        rw.doWalk(id, myepsilon, mycat);
                 }});
 
             th.start();

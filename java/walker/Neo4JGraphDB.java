@@ -68,7 +68,7 @@ public class Neo4JGraphDB
         return l;
     }
 
-    public List<Long> getRandomNodeIds(int count)
+    public List<Long> getRandomNodeIds(int count, String category)
     {
         List<Long> l = getNodeIds();
         Collections.shuffle(l);

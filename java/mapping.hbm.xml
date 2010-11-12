@@ -24,6 +24,14 @@
   <property name="category"/>
 </class>
 
+<class name="Pdf" table="pdf">
+  <composite-id>
+    <key-property name="category"/>
+    <key-property name="source" column="user_id"/>
+  </composite-id>
+  <property name="weight"/>
+</class>
+
 </hibernate-mapping>
 
 

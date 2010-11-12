@@ -24,6 +24,7 @@
         <javac
             srcdir="." 
             destdir="${classes.dir}"
+            debug="true"
             classpathref="build.compile.classpath" >
             <compilerarg line="-Xlint:unchecked -Xlint:finally -Xlint:fallthrough" />
         </javac>
