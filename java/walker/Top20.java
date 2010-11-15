@@ -91,12 +91,7 @@ public class Top20
         int arg = 0;
         GraphDB db;
 
-        if (args.length > 0 && args[0].equals("neo4j")) {
-            db = new Neo4JGraphDB();
-            arg++;
-        }
-        else
-            db = new HibernateGraphDB();
+        db = new HibernateGraphDB();
 
         String category = args[arg];
 
