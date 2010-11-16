@@ -12,10 +12,17 @@ public class Streamer implements StreamHandler
     } 
 
     public static void main(String[] args)
+        throws Exception
     {
-        Stream ts = new TwitterStream();
-        ts.registerHandler(new Streamer());
+        TwitterStream ts = new TwitterStream();
+        GraphStream gs = new GraphStream(ts, new HibernateGraphDB());
+
+        Streamer streamer = new Streamer();
+
+        gs.registerHandler(streamer);
+        ts.registerHandler(streamer);
         ts.start();
+        gs.start();
     }
 }
 

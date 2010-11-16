@@ -87,6 +87,14 @@ public class HibernateGraphDB extends BaseDB
         return retlist;
     }
 
+    public int getOutDegree(long source)
+    {
+        return ((Number) getCurrentSession()
+            .createQuery("select count(*) from Edge where source=?")
+            .setLong(0, source)
+            .uniqueResult()).intValue();
+    }
+
     public Long getRandomNeighbor(long source)
     {
         List<Long> list = CollectionUtils.cast(getCurrentSession()
