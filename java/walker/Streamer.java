@@ -1,5 +1,7 @@
 package walker;
 
+import twitter4j.*;
+
 public class Streamer implements StreamHandler
 {
     private Crawl crawl;
@@ -15,8 +17,19 @@ public class Streamer implements StreamHandler
         {
             try {
                 crawl.update(((GraphUpdate) object).getId());
-            } catch (Exception e) {
-                System.err.println(e);
+            } catch (TwitterException e) {
+                if (e.exceededRateLimitation())
+                {
+                    try {
+                        int secs = e.getRateLimitStatus()
+                            .getSecondsUntilReset();
+
+                        System.out.println("RL sleeping " + secs);
+                        Thread.sleep(secs * 1000);
+                    } catch (InterruptedException ie) {}
+                }
+                else
+                    System.err.println(e);
             }
         }
 
