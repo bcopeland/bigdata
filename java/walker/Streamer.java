@@ -5,10 +5,12 @@ import twitter4j.*;
 public class Streamer implements StreamHandler
 {
     private Crawl crawl;
+    private IncrementalPdf pdf;
 
     public Streamer(GraphDB db)
     {
         crawl = new Crawl(db);
+        pdf = new IncrementalPdf(db);
     }
 
     public void onItem(String identifier, Object object)
@@ -32,7 +34,10 @@ public class Streamer implements StreamHandler
                     System.err.println(e);
             }
         }
-
+        else if (object instanceof Status)
+        {
+            pdf.update((Status) object);
+        }
         System.out.println("item: " + object);
     } 
 

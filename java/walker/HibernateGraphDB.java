@@ -149,4 +149,19 @@ public class HibernateGraphDB extends BaseDB
     {
         getCurrentSession().save(ws);
     }
+
+    public void updatePdf(long userid, String category)
+    {
+        Pdf pdf = (Pdf) getCurrentSession()
+            .createQuery("from Pdf where source=? and category=?")
+            .setLong(0, userid)
+            .setString(1, category)
+            .uniqueResult();
+
+        if (pdf == null)
+            pdf = new Pdf(userid, category);
+
+        pdf.setWeight(pdf.getWeight() + 1);
+        getCurrentSession().saveOrUpdate(pdf);
+    }
 }

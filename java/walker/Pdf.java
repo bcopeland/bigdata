@@ -12,6 +12,16 @@ public class Pdf implements Serializable, Comparable<Integer>
     private String category;
     private int summedWeight;
 
+    public Pdf()
+    {
+    }
+
+    public Pdf(long source, String category)
+    {
+        this.source = source;
+        this.category = category;
+    }
+
     public void setSource(long source)
     {
         this.source = source;

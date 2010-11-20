@@ -22,4 +22,5 @@ public interface GraphDB
     Map<Long,Float> getWalkCounts(String category);
     void saveEdge(Edge e);
     void saveSegment(WalkSegment ws);
+    void updatePdf(long userid, String category);
 }
