@@ -3,9 +3,12 @@ package walker;
 import twitter4j.*;
 import java.util.*;
 
+import org.apache.log4j.*;
+
 public class Crawl
     implements Sink<GraphUpdate>
 {
+    private static final Logger logger = Logger.getLogger(Crawl.class);
     private GraphDB db;
     private Twitter twitter;
 
@@ -23,7 +26,16 @@ public class Crawl
         }
         catch (TwitterException e)
         {
-            e.printStackTrace();
+            if (e.exceededRateLimitation())
+            {
+                try {
+                    int secs = e.getRateLimitStatus()
+                        .getSecondsUntilReset();
+
+                    logger.info("Rate limit: " + secs);
+                    Thread.sleep(secs * 1000);
+                } catch (InterruptedException ie) {}
+            }
         }
     }
 
@@ -45,9 +57,10 @@ public class Crawl
         for (long dest : twitterList) {
             Edge edge = new Edge(source, dest);
             db.saveEdge(edge);
-            System.out.println("added edge " + edge);
         }
         db.commit(tx);
+
+        // FIXME do we want to update the walks here?
     }
         
     public static void main(String args[])

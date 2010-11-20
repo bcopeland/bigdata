@@ -11,12 +11,13 @@ import java.util.concurrent.*;
 public class ItemQueue<T>
     implements Runnable
 {
+    private static final int BACKLOG = 100;
     private LinkedBlockingQueue<T> queue;
     private Set<Sink<T>> sinks;
 
     public ItemQueue()
     {
-        queue = new LinkedBlockingQueue<T>();
+        queue = new LinkedBlockingQueue<T>(BACKLOG);
         sinks = new HashSet<Sink<T>>();
 
         new Thread(this).start();
