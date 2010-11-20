@@ -4,6 +4,7 @@ import twitter4j.*;
 import java.util.*;
 
 public class Crawl
+    implements Sink<GraphUpdate>
 {
     private GraphDB db;
     private Twitter twitter;
@@ -12,6 +13,18 @@ public class Crawl
     {
         this.db = db;
         this.twitter = new TwitterFactory().getInstance();
+    }
+
+    public void onItem(GraphUpdate item)
+    {
+        try
+        {
+            update(item.getId());
+        }
+        catch (TwitterException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public void update(long source)
