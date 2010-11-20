@@ -17,6 +17,8 @@ public class ItemQueue<T>
     public ItemQueue()
     {
         queue = new LinkedBlockingQueue<T>();
+        sinks = new HashSet<Sink<T>>();
+
         new Thread(this).start();
     }
 

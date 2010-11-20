@@ -2,38 +2,24 @@ package walker;
 
 import twitter4j.*;
 
-public class GraphStream extends Stream
-    implements StreamHandler
+public class GraphStream
+    extends AbstractSource<GraphUpdate>
+    implements Sink<Status>
 {
-    private walker.TwitterStream stream;
     private GraphDB db;
 
-    public GraphStream(TwitterStream stream, GraphDB db)
-        throws TwitterException
+    public GraphStream(GraphDB db)
     {
-        this.stream = stream;
         this.db = db;
     }
 
-    public void start()
+    public void onItem(Status status)
     {
-        stream.registerHandler(this);
-    }
-
-    public void onItem(String stream, Object object)
-    {
-        Status status = (Status) object;
-
         /* convert to graph update */
         long id = (long) status.getUser().getId();
         if (db.getOutDegree(id) != status.getUser().getFriendsCount())
         {
-            doCallback(new GraphUpdate(id));
+            produceItem(new GraphUpdate(id));
         }
-    }
-
-    public String getIdentifier()
-    {
-        return "graph";
     }
 }

@@ -2,58 +2,37 @@ package walker;
 
 import twitter4j.*;
 
-public class Streamer implements StreamHandler
+public class Streamer
 {
-    private Crawl crawl;
-    private IncrementalPdf pdf;
-
     public Streamer(GraphDB db)
+        throws TwitterException
     {
-        crawl = new Crawl(db);
-        pdf = new IncrementalPdf(db);
+        // create the streams
+        TwitterStream ts = new TwitterStream();
+        GraphStream gs = new GraphStream(db);
+
+        // create sinks
+        Sink<Status> pdf = new IncrementalPdf(db);
+        Sink<GraphUpdate> crawl = new Crawl(db);
+
+        Sink<Status> statuslog = new LogSink<Status>("status");
+        Sink<GraphUpdate> graphlog = new LogSink<GraphUpdate>("graph");
+
+        // hook up the sinks to sources
+        ts.attach(pdf);
+        ts.attach(statuslog);
+
+        ts.attach(gs);
+        gs.attach(crawl);
+        gs.attach(graphlog);
+
+        // now wait for the other threads to end... 
     }
-
-    public void onItem(String identifier, Object object)
-    {
-        if (object instanceof GraphUpdate)
-        {
-            try {
-                crawl.update(((GraphUpdate) object).getId());
-            } catch (TwitterException e) {
-                if (e.exceededRateLimitation())
-                {
-                    try {
-                        int secs = e.getRateLimitStatus()
-                            .getSecondsUntilReset();
-
-                        System.out.println("RL sleeping " + secs);
-                        Thread.sleep(secs * 1000);
-                    } catch (InterruptedException ie) {}
-                }
-                else
-                    System.err.println(e);
-            }
-        }
-        else if (object instanceof Status)
-        {
-            pdf.update((Status) object);
-        }
-        System.out.println("item: " + object);
-    } 
 
     public static void main(String[] args)
         throws Exception
     {
-        GraphDB db = new HibernateGraphDB();
-        TwitterStream ts = new TwitterStream();
-        GraphStream gs = new GraphStream(ts, db);
-
-        Streamer streamer = new Streamer(db);
-
-        gs.registerHandler(streamer);
-        ts.registerHandler(streamer);
-        ts.start();
-        gs.start();
+        new Streamer(new HibernateGraphDB());
     }
 }
 

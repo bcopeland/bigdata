@@ -2,10 +2,12 @@ package walker;
 
 import twitter4j.*;
 
-public class TwitterStream extends Stream
+public class TwitterStream
+    extends AbstractSource<Status>
     implements Runnable, StatusListener
 {
     private StatusStream stream;
+    private Thread thread;
 
     public TwitterStream()
         throws TwitterException
@@ -13,11 +15,13 @@ public class TwitterStream extends Stream
         twitter4j.TwitterStream twitter =
             new TwitterStreamFactory().getInstance();
         stream = twitter.getSampleStream();
+        start();
     }
 
     public void start()
     {
-        new Thread(this).start();
+        thread = new Thread(this);
+        thread.start();
     }
 
     public void run()
@@ -35,7 +39,7 @@ public class TwitterStream extends Stream
 
     public void onStatus(Status status)
     {
-        doCallback(status);
+        produceItem(status);
     }
 
     public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice)
@@ -48,10 +52,5 @@ public class TwitterStream extends Stream
 
     public void onTrackLimitationNotice(int number)
     {
-    }
-
-    public String getIdentifier()
-    {
-        return "twitter";
     }
 }
