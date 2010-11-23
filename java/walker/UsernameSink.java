@@ -24,43 +24,11 @@ public class UsernameSink
         if (user != null)
             return;
 
-        String username = getScreenName(id);
-        if (username == null)
-            return;  // oh well, we tried...
+        String username = tweet.getUser().getScreenName();
 
         Object tx = db.begin();
         user = new User(id, username);
         db.saveUser(user);
         db.commit(tx);
-    }
-
-    private String getScreenName(long id)
-    {
-        String result = null;
-
-        // try to get it from twitter...
-        twitter4j.User user = null;
-        try
-        {
-            user = twitter.showUser((int) id);
-        }
-        catch (TwitterException e)
-        {
-            if (e.exceededRateLimitation())
-            {
-                try {
-                    int secs = e.getRateLimitStatus()
-                    .getSecondsUntilReset();
-
-                    logger.info("Rate limit: " + secs);
-                    Thread.sleep(secs * 1000);
-                } catch (InterruptedException ie) {}
-            }
-        }
-
-        if (user != null)
-            result = user.getScreenName();
-
-        return result;
     }
 }
