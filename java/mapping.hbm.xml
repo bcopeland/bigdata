@@ -32,6 +32,11 @@
   <property name="weight"/>
 </class>
 
+<class name="User" table="users">
+  <id name="source" column="user_id"/>
+  <property name="name"/>
+</class>
+
 </hibernate-mapping>
 
 

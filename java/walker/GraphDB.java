@@ -23,4 +23,6 @@ public interface GraphDB
     void saveEdge(Edge e);
     void saveSegment(WalkSegment ws);
     void updatePdf(long userid, String category);
+    User getUserById(long id);
+    public void saveUser(User u);
 }

@@ -164,4 +164,14 @@ public class HibernateGraphDB extends BaseDB
         pdf.setWeight(pdf.getWeight() + 1);
         getCurrentSession().saveOrUpdate(pdf);
     }
+
+    public User getUserById(long id)
+    {
+        return (User) getCurrentSession().get(User.class, id);
+    }
+
+    public void saveUser(User u)
+    {
+        getCurrentSession().save(u);
+    }
 }

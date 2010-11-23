@@ -1,13 +1,12 @@
 package walker;
 
-import twitter4j.*;
 import java.util.*;
+import twitter4j.*;
 
 public class IncrementalPdf
     implements Sink<Status>
 {
     private GraphDB db;
-    private Twitter twitter;
 
     public IncrementalPdf(GraphDB db)
     {
