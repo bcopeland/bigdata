@@ -34,6 +34,8 @@ import twitter4j.internal.http.HttpClientWrapperConfiguration;
 import twitter4j.internal.http.HttpParameter;
 import twitter4j.internal.logging.Logger;
 
+import java.io.*;
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -254,6 +256,16 @@ public final class TwitterStream extends TwitterOAuthSupportBaseImpl implements 
         try {
             return new StatusStreamImpl(http.get(conf.getStreamBaseURL() + "statuses/sample.json"
                     , auth));
+        } catch (IOException e) {
+            throw new TwitterException(e);
+        }
+    }
+
+    public StatusStream getStreamFromFile(InputStream is)
+        throws TwitterException
+    {
+        try {
+            return new StatusStreamImpl(is);
         } catch (IOException e) {
             throw new TwitterException(e);
         }
