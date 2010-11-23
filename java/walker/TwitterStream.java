@@ -1,6 +1,7 @@
 package walker;
 
 import twitter4j.*;
+import java.io.*;
 
 public class TwitterStream
     extends AbstractSource<Status>
@@ -15,6 +16,15 @@ public class TwitterStream
         twitter4j.TwitterStream twitter =
             new TwitterStreamFactory().getInstance();
         stream = twitter.getSampleStream();
+        start();
+    }
+
+    public TwitterStream(InputStream is)
+        throws TwitterException
+    {
+        twitter4j.TwitterStream twitter =
+            new TwitterStreamFactory().getInstance();
+        stream = twitter.getStreamFromFile(is);
         start();
     }
 

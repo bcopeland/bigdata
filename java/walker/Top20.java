@@ -31,10 +31,22 @@ public class Top20
     public String resolve(long id)
     {
         String result = nameCache.get(id);
+
+        // try to get it from DB
         if (result == null)
         {
-            // try to get it from twitter...
-            User user = null;
+            User user = db.getUserById(id);
+            if (user != null)
+                result = user.getName();
+            else
+                result = String.valueOf(id);
+        }
+
+        // still no dice?  try to get it from twitter...
+        /*
+        if (result == null)
+        {
+            twitter4j.User user = null;
             try
             {
                 user = twitter.showUser((int) id);
@@ -45,6 +57,7 @@ public class Top20
             else
                 result = String.valueOf(id);
         }
+        */
         nameCache.put(id, result); 
         return result;
     }

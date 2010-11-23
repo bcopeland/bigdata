@@ -1,14 +1,21 @@
 package walker;
 
 import twitter4j.*;
+import java.io.*;
 
 public class Streamer
 {
-    public Streamer(GraphDB db)
+    public Streamer(GraphDB db, InputStream input)
         throws TwitterException
     {
         // create the streams
-        TwitterStream ts = new TwitterStream();
+        TwitterStream ts;
+
+        if (input == null)
+            ts = new TwitterStream();
+        else
+            ts = new TwitterStream(input);
+
         GraphStream gs = new GraphStream(db);
 
         // create sinks
@@ -34,7 +41,12 @@ public class Streamer
     public static void main(String[] args)
         throws Exception
     {
-        new Streamer(new HibernateGraphDB());
+        InputStream is = null;
+        if (args.length > 0) {
+            is = new BufferedInputStream(
+                new FileInputStream(args[0]));
+        }
+        new Streamer(new HibernateGraphDB(), is);
     }
 }
 
