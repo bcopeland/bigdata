@@ -48,6 +48,7 @@ import static twitter4j.internal.util.ParseUtil.getUnescapedString;
  */
 /*package*/ final class StatusJSONImpl extends TwitterResponseImpl implements Status, java.io.Serializable {
 
+    private JSONObject json;
     private Date createdAt;
     private long id;
     private String text;
@@ -83,6 +84,7 @@ import static twitter4j.internal.util.ParseUtil.getUnescapedString;
     }
 
     private void init(JSONObject json) throws TwitterException {
+        this.json = json;
         id = getLong("id", json);
         text = getUnescapedString("text", json);
         source = getUnescapedString("source", json);
@@ -360,22 +362,6 @@ import static twitter4j.internal.util.ParseUtil.getUnescapedString;
 
     @Override
     public String toString() {
-        return "StatusJSONImpl{" +
-                "createdAt=" + createdAt +
-                ", id=" + id +
-                ", text='" + text + '\'' +
-                ", source='" + source + '\'' +
-                ", isTruncated=" + isTruncated +
-                ", inReplyToStatusId=" + inReplyToStatusId +
-                ", inReplyToUserId=" + inReplyToUserId +
-                ", isFavorited=" + isFavorited +
-                ", inReplyToScreenName='" + inReplyToScreenName + '\'' +
-                ", geoLocation=" + geoLocation +
-                ", place=" + place +
-                ", contributors=" + (contributors == null ? null : Arrays.asList(contributors)) +
-                ", annotations=" + annotations +
-                ", retweetedStatus=" + retweetedStatus +
-                ", user=" + user +
-                '}';
+        return json.toString();
     }
 }
