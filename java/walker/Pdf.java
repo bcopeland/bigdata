@@ -72,4 +72,9 @@ public class Pdf implements Serializable, Comparable<Integer>
 
         return 0;
     }
+
+    public String toString()
+    {
+        return source + " " + category + " " + weight + " " + summedWeight;
+    }
 }

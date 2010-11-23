@@ -73,13 +73,13 @@ public class HibernateGraphDB extends BaseDB
         for (int i=0; i < max; i++)
         {
             // flip a coin
-            int area = random.nextInt() * sum;
+            int area = random.nextInt(sum);
 
             // find it by searching
             int index = Collections.binarySearch(distribution, area);
+
             if (index < 0)
-                index = -index;
-            index = Math.min(index, distribution.size()-1);
+                index = -index - 1;
         
             // pick said item
             retlist.add(distribution.get(index).getSource());
