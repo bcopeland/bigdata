@@ -11,7 +11,7 @@ import java.util.concurrent.*;
 public class ItemQueue<T>
     implements Runnable
 {
-    private static final int BACKLOG = 100;
+    private static final int BACKLOG = 1024;
     private LinkedBlockingQueue<T> queue;
     private Set<Sink<T>> sinks;
 
