@@ -2,20 +2,34 @@ package walker;
 
 public class GraphUpdate
 {
-    private long id;
-
-    public GraphUpdate(long id)
+    public enum UpdateType
     {
-        this.id = id;
+        ADD, DELETE
+    };
+
+    private Edge edge;
+    private UpdateType type;
+
+    public GraphUpdate(UpdateType type, Edge edge)
+    {
+        this.type = type;
+        this.edge = edge;
     }
 
-    public long getId()
+    public Edge getEdge()
     {
-        return id;
+        return edge;
+    }
+
+    public UpdateType getType()
+    {
+        return type;
     }
 
     public String toString()
     {
-        return "vertex " + id + " updated";
+        return ((type.equals(UpdateType.ADD)) ? "A" : "D") + "," +
+            edge.getSource() + "," +
+            edge.getTarget();
     }
 }

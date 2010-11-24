@@ -30,7 +30,10 @@ public class ItemQueue<T>
 
     public void add(T obj)
     {
-        queue.offer(obj);
+        try {
+            queue.offer(obj, 60L, TimeUnit.SECONDS);
+        } 
+        catch (InterruptedException ex) {}
     }
 
     public void run()

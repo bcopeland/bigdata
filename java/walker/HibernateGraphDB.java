@@ -145,6 +145,11 @@ public class HibernateGraphDB extends BaseDB
         getCurrentSession().saveOrUpdate(e);
     }
 
+    public void deleteEdge(Edge e)
+    {
+        getCurrentSession().delete(e);
+    }
+
     public void saveSegment(WalkSegment ws)
     {
         getCurrentSession().save(ws);

@@ -21,6 +21,7 @@ public interface GraphDB
     long generateWalkId();
     Map<Long,Float> getWalkCounts(String category);
     void saveEdge(Edge e);
+    void deleteEdge(Edge e);
     void saveSegment(WalkSegment ws);
     void updatePdf(long userid, String category);
     User getUserById(long id);

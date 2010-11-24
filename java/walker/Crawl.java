@@ -6,7 +6,6 @@ import java.util.*;
 import org.apache.log4j.*;
 
 public class Crawl
-    implements Sink<GraphUpdate>
 {
     private static final Logger logger = Logger.getLogger(Crawl.class);
     private GraphDB db;
@@ -16,27 +15,6 @@ public class Crawl
     {
         this.db = db;
         this.twitter = new TwitterFactory().getInstance();
-    }
-
-    public void onItem(GraphUpdate item)
-    {
-        try
-        {
-            update(item.getId());
-        }
-        catch (TwitterException e)
-        {
-            if (e.exceededRateLimitation())
-            {
-                try {
-                    int secs = e.getRateLimitStatus()
-                        .getSecondsUntilReset();
-
-                    logger.info("Rate limit: " + secs);
-                    Thread.sleep(secs * 1000);
-                } catch (InterruptedException ie) {}
-            }
-        }
     }
 
     public void update(long source)
