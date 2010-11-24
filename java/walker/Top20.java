@@ -39,7 +39,8 @@ public class Top20
             if (user != null)
                 result = user.getName();
             else
-                result = String.valueOf(id);
+                // don't cache...
+                return String.valueOf(id);
         }
 
         // still no dice?  try to get it from twitter...
