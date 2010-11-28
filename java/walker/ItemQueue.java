@@ -15,6 +15,8 @@ public class ItemQueue<T>
     private LinkedBlockingQueue<T> queue;
     private Set<Sink<T>> sinks;
 
+    private long waitTime = 500L; 
+
     public ItemQueue()
     {
         queue = new LinkedBlockingQueue<T>(BACKLOG);
@@ -28,10 +30,15 @@ public class ItemQueue<T>
         sinks.add(sink);
     }
 
+    public void setWaitTime(long millis)
+    {
+        this.waitTime = waitTime;
+    }
+
     public void add(T obj)
     {
         try {
-            queue.offer(obj, 60L, TimeUnit.SECONDS);
+            queue.offer(obj, waitTime, TimeUnit.MILLISECONDS);
         } 
         catch (InterruptedException ex) {}
     }

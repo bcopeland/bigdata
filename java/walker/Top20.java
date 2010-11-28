@@ -38,13 +38,9 @@ public class Top20
             User user = db.getUserById(id);
             if (user != null)
                 result = user.getName();
-            else
-                // don't cache...
-                return String.valueOf(id);
         }
 
         // still no dice?  try to get it from twitter...
-        /*
         if (result == null)
         {
             twitter4j.User user = null;
@@ -53,12 +49,18 @@ public class Top20
                 user = twitter.showUser((int) id);
             } catch (TwitterException ignore) {}
 
-            if (user != null)
-                result = user.getScreenName();
-            else
-                result = String.valueOf(id);
+            if (user == null)
+                // don't have it anywhere -- don't cache it
+                return String.valueOf(id);
+
+            result = user.getScreenName();
+
+            // save the username
+            User newUser = new User(id, result);
+            Object tx = db.begin();
+            db.saveUser(newUser);
+            db.commit(tx);
         }
-        */
         nameCache.put(id, result); 
         return result;
     }

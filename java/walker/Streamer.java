@@ -30,7 +30,7 @@ public class Streamer
         // hook up the sinks to sources
         ts.attach(pdf);
         ts.attach(statuslog);
-        ts.attach(users);
+        // ts.attach(users);
         ts.attach(bridge);
 
         bridge.attach(gs);
