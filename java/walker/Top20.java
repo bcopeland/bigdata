@@ -76,7 +76,7 @@ public class Top20
             /* print out the page rank */
             List<Map.Entry<Long, Float>> elements =
                 new ArrayList<Map.Entry<Long, Float>>(
-                    rw.computeRanks(category).entrySet());
+                    rw.computeRanks(category, null, null).entrySet());
     
             Collections.sort(elements,
                 new Comparator<Map.Entry<Long,Float>>() {

@@ -19,7 +19,7 @@ public interface GraphDB
     List<Long> getNeighbors(long source);
     int getOutDegree(long source);
     long generateWalkId();
-    Map<Long,Float> getWalkCounts(String category);
+    Map<Long,Float> getWalkCounts(String category, Date start, Date end);
     void saveEdge(Edge e);
     void deleteEdge(Edge e);
     void saveSegment(WalkSegment ws);

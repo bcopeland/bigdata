@@ -124,13 +124,31 @@ public class HibernateGraphDB extends BaseDB
             .longValue();
     }
 
-    public Map<Long,Float> getWalkCounts(String category)
+    public Map<Long,Float> getWalkCounts(String category,
+                Date start, Date end)
     {
+        String query = "select source_id, count(*) " +
+                "from walk ";
+        String where = "where category = :category ";
+        String group = "group by source_id";
+
+        HashMap<String, Object> params = new HashMap<String, Object>();
+
+        params.put("category", category);
+
+        if (start != null) {
+            where += "and insert_time < :start ";
+            params.put("start", start);
+        }
+
+        if (end != null) {
+            where += "and insert_time < :end ";
+            params.put("end", end);
+        }
+
         List<Object[]> items = CollectionUtils.cast(getCurrentSession()
-            .createSQLQuery("select source_id, count(*) " +
-                "from walk " +
-                "where category = ? group by source_id")
-            .setString(0, category)
+            .createSQLQuery(query + where + group)
+            .setProperties(params)
             .list());
 
         Map<Long,Float> map = new HashMap<Long,Float>();

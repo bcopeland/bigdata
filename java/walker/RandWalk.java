@@ -80,9 +80,10 @@ public class RandWalk
      *  we don't need to count the number of walks, or use N and
      *  epsilon in the calculation.
      */
-    public Map<Long, Float> computeRanks(String category)
+    public Map<Long, Float> computeRanks(String category,
+        Date start, Date end)
     {
-        Map<Long, Float> counts = db.getWalkCounts(category);
+        Map<Long, Float> counts = db.getWalkCounts(category, start, end);
         float sum = 0;
 
         for (float value : counts.values())
