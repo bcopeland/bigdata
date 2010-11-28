@@ -42,9 +42,6 @@ public class HibernateGraphDB extends BaseDB
                 .list());
         }
 
-        // FIXME we can probably do this better... but I'm not
-        // quite sure how.  Stored procedure?
-
         // we need an array list for O(1) accesses during binsearch
         List<Pdf> tmplist = CollectionUtils.cast(
             getCurrentSession()
@@ -129,7 +126,7 @@ public class HibernateGraphDB extends BaseDB
     {
         String query = "select source_id, count(*) " +
                 "from walk ";
-        String where = "where category = :category ";
+        String where = "where category = :category and remove_time is null ";
         String group = "group by source_id";
 
         HashMap<String, Object> params = new HashMap<String, Object>();
@@ -158,6 +155,15 @@ public class HibernateGraphDB extends BaseDB
         return map;
     }
 
+    public int getWalkCount(long source)
+    {
+        return ((Number) getCurrentSession()
+            .createQuery("select count(*) from WalkSegment w " +
+                "where w.edge.source=?")
+            .setLong(0, source)
+            .uniqueResult()).intValue();
+    }
+
     public void saveEdge(Edge e)
     {
         getCurrentSession().saveOrUpdate(e);
@@ -171,6 +177,42 @@ public class HibernateGraphDB extends BaseDB
     public void saveSegment(WalkSegment ws)
     {
         getCurrentSession().save(ws);
+    }
+
+    public Map<String, Integer> removeWalks(long source)
+    {
+        // count the various categories that are affected
+        List<Object[]> results = CollectionUtils.cast(getCurrentSession()
+            .createSQLQuery("select walk_id, category, count(*) " +
+                "from walk where source_id=? and remove_time is null " +
+                "group by walk_id, category")
+            .setLong(0, source)
+            .list());
+
+        Map<String,Integer> affected = new HashMap<String, Integer>();
+
+        for (Object[] item : results)
+        {
+            String category = (String) item[1];
+            Integer count = ((Number) item[2]).intValue();
+
+            // aggregate based on category
+            Integer current = affected.get(category);
+            if (current == null)
+                current = Integer.valueOf(0);
+
+            affected.put(category, current + count);
+        }
+
+        // now "delete" them all
+        getCurrentSession()
+            .createSQLQuery(
+                "update walk set remove_time=now() where walk_id in " +
+                "(select walk_id where source_id=?)")
+            .setLong(0, source)
+            .executeUpdate();
+
+        return affected;
     }
 
     public void updatePdf(long userid, String category)

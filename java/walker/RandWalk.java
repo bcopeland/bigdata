@@ -1,9 +1,11 @@
 package walker;
 
 import java.util.*;
+import org.apache.log4j.*;
 
 public class RandWalk
 {
+    private Logger logger = Logger.getLogger(RandWalk.class);
     private Random generator;
     private GraphDB db;
 
@@ -48,6 +50,47 @@ public class RandWalk
             start = nextNode;
         }
         return step;
+    }
+
+    public void updateWalks(Edge edge, boolean isadd)
+    {
+        long deleteNode = edge.getTarget();
+        if (isadd)
+        {
+            // the probability that we should have taken a path
+            // from u->v is one minus the probability p(x) that we
+            // only took paths u->s s.t. s != v, which is
+            // ((d(u)-1)/u)^{nwalks}.  Thus if we flip a coin
+            // >= (1-p(x)), we don't have to do the update.
+            long source = edge.getSource();
+
+            List<Long> neighbors = db.getNeighbors(source);
+            float nwalks = db.getWalkCount(source);
+            float count = (float) neighbors.size();
+
+            float pofx = (float) Math.pow((count-1f)/(count), nwalks);
+            if (generator.nextFloat() >= 1 - pofx)
+            {
+                logger.debug("skipped walk update " + pofx);
+                return;
+            }
+
+            logger.debug("walk update " + pofx);
+            deleteNode = source;
+        }
+
+        // delete all walks touching node (by just setting a removal
+        // timestamp) and run replacement walks
+        Map<String, Integer> removed = db.removeWalks(deleteNode);
+        for (Map.Entry<String,Integer> walk: removed.entrySet())
+        {
+            int count = walk.getValue();
+            String category = walk.getKey();
+
+            List<Long> ids = db.getRandomNodeIds(count, category);
+            for (Long id : ids)
+                doWalk(id, 0.15f, category);
+        }
     }
 
     public Long getRandomNeighbor(long source)

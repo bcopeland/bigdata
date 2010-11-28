@@ -37,14 +37,7 @@ public class GraphUpdateSink
 
     public void doWalkUpdates(GraphUpdate item)
     {
-        // something like:
-        // if delete then delete all walks touching node
-        //   (by just setting a removal timestamp?)
-        //   and run that many walks
-        //
-        // if add then compute prob
-        //   1 - (1-1/d(source))^w(source)
-        // if rand() > prob then do the above
-        // should go in randWalk() ?
+        randWalk.updateWalks(item.getEdge(),
+            item.getType().equals(GraphUpdate.UpdateType.ADD));
     }
 }
