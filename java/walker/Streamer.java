@@ -5,16 +5,10 @@ import java.io.*;
 
 public class Streamer
 {
-    public Streamer(GraphDB db, InputStream input)
+    public Streamer(GraphDB db, Source<Status> ts)
         throws TwitterException
     {
         // create the streams
-        TwitterStream ts;
-
-        if (input == null)
-            ts = new TwitterStream();
-        else
-            ts = new TwitterStream(input);
 
         GraphStream gs = new GraphStream(db);
 
@@ -25,6 +19,7 @@ public class Streamer
 
         Sink<Status> statuslog = new LogSink<Status>("status");
         Sink<GraphUpdate> graphlog = new LogSink<GraphUpdate>("graph");
+
         Bridge<Status> bridge = new Bridge<Status>();
 
         // hook up the sinks to sources
@@ -43,12 +38,25 @@ public class Streamer
     public static void main(String[] args)
         throws Exception
     {
-        InputStream is = null;
-        if (args.length > 0) {
-            is = new BufferedInputStream(
-                new FileInputStream(args[0]));
+        Source<Status> ts = null;
+
+        if (args.length > 0)
+        {
+            if (args[0].equals("-t"))
+            {
+                ts = new TrackStatusSource();
+            }
+            else 
+            {
+                InputStream is = new BufferedInputStream(
+                    new FileInputStream(args[0]));
+                ts = new TwitterStream(is);
+            }
         }
-        new Streamer(new HibernateGraphDB(), is);
+        if (ts == null)
+            ts = new TwitterStream();
+
+        new Streamer(new HibernateGraphDB(), ts);
     }
 }
 

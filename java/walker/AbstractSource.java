@@ -4,6 +4,7 @@ package walker;
  * An abstract base class for stream sources.
  */
 public abstract class AbstractSource<T>
+    implements Source<T>
 {
     protected ItemQueue<T> queue;
 

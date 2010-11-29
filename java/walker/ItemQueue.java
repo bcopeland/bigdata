@@ -15,7 +15,7 @@ public class ItemQueue<T>
     private LinkedBlockingQueue<T> queue;
     private Set<Sink<T>> sinks;
 
-    private long waitTime = 500L; 
+    private long waitTime = 10L; 
 
     public ItemQueue()
     {
