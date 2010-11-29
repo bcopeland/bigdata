@@ -14,19 +14,21 @@ public class Streamer
 
         // create sinks
         Sink<Status> pdf = new IncrementalPdf(db);
-        Sink<Status> users = new UsernameSink(db);
+        Sink<Status> walker = new RandWalk(db);
         Sink<GraphUpdate> graphSink = new GraphUpdateSink(db);
 
         Sink<Status> statuslog = new LogSink<Status>("status");
         Sink<GraphUpdate> graphlog = new LogSink<GraphUpdate>("graph");
 
         Bridge<Status> bridge = new Bridge<Status>();
+        Bridge<Status> walkBridge = new Bridge<Status>();
 
         // hook up the sinks to sources
         ts.attach(pdf);
         ts.attach(statuslog);
-        // ts.attach(users);
         ts.attach(bridge);
+
+        walkBridge.attach(walker);
 
         bridge.attach(gs);
         gs.attach(graphSink);

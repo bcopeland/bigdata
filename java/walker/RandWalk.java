@@ -1,10 +1,14 @@
 package walker;
 
+import twitter4j.*;
 import java.util.*;
 import org.apache.log4j.*;
 
 public class RandWalk
+    implements Sink<Status>
 {
+    public static final float epsilon = .15f;
+    public static final int numthreads = 4;
     private Logger logger = Logger.getLogger(RandWalk.class);
     private Random generator;
     private GraphDB db;
@@ -15,7 +19,50 @@ public class RandWalk
         this.generator = new Random();
     }
 
-    public void doWalk(long start, float epsilon, String category)
+    public void onItem(Status tweet)
+    {
+        for (String category : tweet.getHashtags())
+            doNWalks(1, category);
+    }
+
+    public void doNWalks(int count, String category)
+    {
+        /* pick R random ids and run walks on all of them */
+        List<Long> ids = db.getRandomNodeIds(count, category);
+        int listlen = (ids.size() + numthreads - 1) / numthreads;
+
+        Thread[] threads = new Thread[numthreads];
+        for (int i=0; i < numthreads; i++)
+        {
+            int start = i * listlen;
+            int end = Math.min(start + listlen, ids.size());
+            if (end <= start)
+                break;
+
+            final GraphDB mydb = db;
+            final List<Long> sublist = ids.subList(start, end);
+            final float myepsilon = epsilon;
+            final String mycat = category;
+
+            threads[i] = new Thread(new Runnable() {
+                public void run() {
+                    for (long id : sublist)
+                        doWalk(id, mycat);
+                }});
+
+            threads[i].start();
+        }
+
+        for (int i=0; i < numthreads; i++)
+        {
+            try {
+                if (threads[i] != null)
+                    threads[i].join();
+            } catch (InterruptedException ignore) {}
+        }
+    }
+
+    public void doWalk(long start, String category)
     {
         long now = System.currentTimeMillis();
         Object tx = db.begin();
@@ -86,10 +133,7 @@ public class RandWalk
         {
             int count = walk.getValue();
             String category = walk.getKey();
-
-            List<Long> ids = db.getRandomNodeIds(count, category);
-            for (Long id : ids)
-                doWalk(id, 0.15f, category);
+            doNWalks(count, category);
         }
     }
 
@@ -144,8 +188,6 @@ public class RandWalk
     public static void main(String args[])
     {
         int R = 200000;
-        int numthreads = 4;
-        float epsilon = 0.15f;
 
         GraphDB db;
 
@@ -153,28 +195,6 @@ public class RandWalk
         db = new HibernateGraphDB();
 
         String category = args[arg];
-
-        /* pick R random ids and run walks on all of them */
-        List<Long> ids = db.getRandomNodeIds(R, category);
-        int listlen = (ids.size() + numthreads - 1) / numthreads;
-        for (int i=0; i < numthreads; i++)
-        {
-            int start = i * listlen;
-            int end = Math.min(start + listlen, ids.size());
-
-            final GraphDB mydb = db;
-            final List<Long> sublist = ids.subList(start, end);
-            final float myepsilon = epsilon;
-            final String mycat = category;
-
-            Thread th = new Thread(new Runnable() {
-                public void run() {
-                    RandWalk rw = new RandWalk(mydb);
-                    for (long id : sublist)
-                        rw.doWalk(id, myepsilon, mycat);
-                }});
-
-            th.start();
-        }
+        new RandWalk(db).doNWalks(R, category);
     }
 }
