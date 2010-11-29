@@ -13,13 +13,13 @@ public class Top20
     public static final int CACHE_SIZE = 1000;
     private GraphDB db;
     private Map<Long,String> nameCache;
-    private String category;
     private Twitter twitter;
+    private RandWalk randWalk;
 
-    public Top20(GraphDB db, String category)
+    public Top20(GraphDB db)
     {
         this.db = db;
-        this.category = category;
+        randWalk = new RandWalk(db);
         nameCache = new LinkedHashMap<Long, String>() {
             protected boolean removeEldestEntry(Map.Entry<Long,String> eldest)
             {
@@ -65,36 +65,54 @@ public class Top20
         return result;
     }
 
-    public void go()
+    public List<Map.Entry<String, Float>> getTopK(int n, String category)
+    {
+        /* print out the page rank */
+        List<Map.Entry<Long, Float>> elements =
+            new ArrayList<Map.Entry<Long, Float>>(
+                randWalk.computeRanks(category, null, null).entrySet());
+    
+        Collections.sort(elements,
+            new Comparator<Map.Entry<Long,Float>>() {
+                public int compare(Map.Entry<Long,Float> o1,
+                                   Map.Entry<Long,Float> o2)
+                {
+                    return o2.getValue().compareTo(o1.getValue());
+                }});
+
+        int i = 0;
+        if (n == -1)
+            n = elements.size();
+
+        List<Map.Entry<String, Float>> results =
+            new ArrayList<Map.Entry<String, Float>>(n);
+
+        for (Map.Entry<Long,Float> x : elements)
+        {
+            results.add(new Pair<String,Float>(
+                resolve(x.getKey()), x.getValue()));
+            if (++i >= n)
+                break;
+        }
+        return results;
+    }
+
+    public void go(int count, String category)
     {
         String CLR = "\u001b[2J";
 
-        RandWalk rw = new RandWalk(db);
-
         while (true)
         {
-            /* print out the page rank */
-            List<Map.Entry<Long, Float>> elements =
-                new ArrayList<Map.Entry<Long, Float>>(
-                    rw.computeRanks(category, null, null).entrySet());
-    
-            Collections.sort(elements,
-                new Comparator<Map.Entry<Long,Float>>() {
-                    public int compare(Map.Entry<Long,Float> o1,
-                                       Map.Entry<Long,Float> o2)
-                    {
-                        return o2.getValue().compareTo(o1.getValue());
-                    }});
-
             System.out.print(CLR);
             
             int i = 0;
-            for (Map.Entry<Long,Float> x : elements)
+            List<Map.Entry<String, Float>> elements =
+                getTopK(count, category);
+
+            for (Map.Entry<String,Float> x : elements)
             {
-                System.out.printf("%30s\t\t\t%.10f\n", resolve(x.getKey()),
+                System.out.printf("%30s\t\t\t%.10f\n", x.getKey(),
                     x.getValue());
-                if (++i >= LINES)
-                    break;
             }
             try {
                 Thread.sleep(1000);
@@ -111,6 +129,6 @@ public class Top20
 
         String category = args[arg];
 
-        new Top20(db, category).go();
+        new Top20(db).go(20, category);
     }
 }

@@ -3,6 +3,7 @@
     <description>Build file for bigdata</description>
     <property environment="env" />
     <property name="classes.dir" value="classes"/>
+    <property name="web.classes.dir" value="bdslss.war/WEB-INF/classes"/>
 
 
     <target name="resolve" description="--> retrieve dependencies with ivy">
@@ -18,6 +19,13 @@
     </target>
 
     <target name="deps" depends="init-ivy,resolve" />
+
+    <target name="install" depends="compile">
+        <mkdir dir="${web.classes.dir}" />
+        <copy todir="${web.classes.dir}"> 
+           <fileset dir="${classes.dir}"/>
+        </copy>
+    </target>
 
     <target name="compile">
         <mkdir dir="${classes.dir}" />
