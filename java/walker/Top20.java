@@ -10,7 +10,7 @@ import twitter4j.*;
 public class Top20
 {
     public static final int LINES = 23;
-    public static final int CACHE_SIZE = 1000;
+    public static final int CACHE_SIZE = 5000;
     private GraphDB db;
     private Map<Long,String> nameCache;
     private Twitter twitter;
@@ -65,12 +65,14 @@ public class Top20
         return result;
     }
 
-    public List<Map.Entry<String, Float>> getTopK(int n, String category)
+    public List<Map.Entry<String, Float>> getTopK(int n, String category, Date start, Date end)
     {
         /* print out the page rank */
         List<Map.Entry<Long, Float>> elements =
             new ArrayList<Map.Entry<Long, Float>>(
-                randWalk.computeRanks(category, null, null).entrySet());
+                randWalk.computeRanks(category, start, end).entrySet());
+        
+
     
         Collections.sort(elements,
             new Comparator<Map.Entry<Long,Float>>() {
@@ -103,12 +105,11 @@ public class Top20
 
         while (true)
         {
-            System.out.print(CLR);
-            
             int i = 0;
             List<Map.Entry<String, Float>> elements =
-                getTopK(count, category);
+                getTopK(count, category, null, null);
 
+            System.out.print(CLR);
             for (Map.Entry<String,Float> x : elements)
             {
                 System.out.printf("%30s\t\t\t%.10f\n", x.getKey(),

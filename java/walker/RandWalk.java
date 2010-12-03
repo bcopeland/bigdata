@@ -187,14 +187,14 @@ public class RandWalk
 
     public static void main(String args[])
     {
-        int R = 200000;
-
         GraphDB db;
 
         int arg = 0;
         db = new HibernateGraphDB();
 
-        String category = args[arg];
+        String category = args[arg++];
+        int R = Integer.valueOf(args[arg]);
+
         new RandWalk(db).doNWalks(R, category);
     }
 }

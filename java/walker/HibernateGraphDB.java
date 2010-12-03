@@ -24,7 +24,7 @@ public class HibernateGraphDB extends BaseDB
     public List<Long> getNodeIds()
     {
         return CollectionUtils.cast(getCurrentSession()
-            .createQuery("select source from Edge")
+            .createQuery("select source from Edge order by random()")
             .setMaxResults(200000)
             .list());
     }
@@ -134,7 +134,7 @@ public class HibernateGraphDB extends BaseDB
         params.put("category", category);
 
         if (start != null) {
-            where += "and insert_time < :start ";
+            where += "and insert_time >= :start ";
             params.put("start", start);
         }
 
