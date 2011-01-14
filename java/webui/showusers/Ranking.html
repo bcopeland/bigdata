@@ -1,0 +1,108 @@
+<html>
+<head>
+<title>
+CDF
+</title>
+<link href="default.css"
+		 rel="stylesheet"
+		 type="text/css" />
+
+<script language="JavaScript" src="slider.js" ></script>
+<script language="javascript" type="text/javascript" src="flot/jquery.js"></script>
+<script language="javascript" type="text/javascript" src="flot/jquery.flot.js"></script>
+</head>
+
+<body>
+
+
+<div>
+<textarea id="category" COLS=40 ROWS=1>
+</textarea>
+</div>
+
+&nbsp;<p/>
+
+<form name="myform">
+<div>
+	<input type="text" id="inputUsername" size="25" value="Enter the user name here"><br>
+	<input type="button" value="Add user to chart" onClick="addUser()">
+	<input type="button" value="START" onClick="start()">
+	<input type="button" value="STOP" onClick="stop()">
+	<input type="button" value="CLEAR USER" onClick="clearUser()"><br>
+</div>
+</form>
+
+
+<form name="jump">
+	<select name="menu" id="refreshTime">
+		<option value=5000>5 secounds</option>
+		<option value=10000>10 secounds</option>
+		<option value=15000>15 secounds</option>
+	</select>
+</form>
+
+
+<table border="0">
+<tr>
+<td></td>
+<td><div id="placeholder" style="width:600px;height:300px;"></div></td>
+<td>
+	<div>
+	<br><br>
+		<textarea id="usernameText" disabled="true" COLS=40 ROWS=15>
+		</textarea>
+	<br><br>
+	</div>
+</td>
+</tr>
+<tr>
+</tr>
+</table> 	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&nbsp;<p/>
+&nbsp;<p/>
+&nbsp;<p/>
+
+<div class="carpe_horizontal_slider_track">
+    <div class="carpe_slider_slit">&nbsp;</div>
+    <div class="carpe_slider"
+        id="your_slider_id"
+        orientation="horizontal"
+        distance="100"
+        display="displayId"
+        style="left: 0px;">&nbsp;
+	</div>
+</div>
+
+<div class="carpe_slider_display_holder" >
+    <input class="carpe_slider_display"
+        id="displayId"
+        name="your_var_name"
+        type="text"
+        from="0"
+        to="100"
+        valuecount="101"
+        value="0"
+        typelock="off" />
+</div>
+&nbsp;<p/>
+
+
+
+</body>
+</html>

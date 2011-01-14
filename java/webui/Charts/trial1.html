@@ -1,0 +1,41 @@
+<html> 
+ <head>
+    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+    <script type='text/javascript'>
+      google.load('visualization', '1', {'packages':['annotatedtimeline']});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+alert(new Date(2009, 1 ,1,10,30,20));
+        var data = new google.visualization.DataTable();
+        data.addColumn('datetime', 'Time');
+        data.addColumn('number', '[Person 1]');
+        data.addColumn('string', 'title1');
+        data.addColumn('string', 'text1');
+        data.addColumn('number', '[Person 2]');
+        data.addColumn('string', 'title2');
+        data.addColumn('string', 'text2');
+data.addColumn('number', '[Person-3]');
+        data.addColumn('string', 'title3');
+        data.addColumn('string', 'text3');
+        data.addRows([
+          [new Date(2009, 1 ,1,10,30,20), 3, undefined, undefined, 4, undefined, undefined,  5, undefined, undefined],
+          [new Date(2009, 1 ,2,10,30,20), 4, undefined, undefined, 2, undefined, undefined, 4, undefined, undefined],
+          [new Date(2009, 1 ,3,10,30,20), 5, undefined, undefined, 5, undefined, undefined, 3, undefined, undefined],
+          [new Date(2009, 1 ,4,10,30,20), 7, undefined, undefined, 4, undefined,undefined, 2, undefined, undefined],
+          [new Date(2009, 1 ,5,10,30,20), 1, undefined,undefined, 6, undefined, undefined,  5, undefined, undefined],
+        [new Date(2009, 1 ,6,10,30,20), 1, 'Latest Rank of person 1', '3', 6, 'Latest Rank of person 2','4',  5, 'Latest Rank of person 3', '5']
+
+        ]);
+
+        var chart = new google.visualization.AnnotatedTimeLine(document.getElementById('chart_div'));
+        chart.draw(data, {displayAnnotations: true});
+      }
+    </script>
+  </head>
+
+  <body>
+    // Note how you must specify the size of the container element explicitly!
+    <div id='chart_div' style='width: 700px; height: 240px;'></div>
+
+  </body>
+</html>
